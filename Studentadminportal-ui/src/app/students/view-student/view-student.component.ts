@@ -53,13 +53,26 @@ export class ViewStudentComponent {
 
   ngOnInit(): void{
     this.route.paramMap.subscribe({
-      next: (x: any) => {this.studentID = x.get('id')},
+      next: (x: any) => {
+        this.studentID = x.get('id')
+      },
       error: (d) => {
         console.log(d)
       }
     })
 
     if(this.studentID) {
+
+      //if the route contains the 'Add'
+      // -> new Student functionality
+      if (this.studentID.toLowerCase() === 'Add'.toLowerCase()) {
+        // -> new Student Functionality
+        this.isNewStudent = true;
+        this.header = 'Add New Student';
+        //this.setImage();
+      } else {
+      //Otherwise it will be existing
+      this.header = 'Edit Student';
       this.studentServe.getStudent(this.studentID).subscribe({
         next: (x: any) => {
           this.student = x;
@@ -69,6 +82,7 @@ export class ViewStudentComponent {
           console.log(d)
         }
       })
+    }
 
       this.genderService.getGenderList().subscribe({
         next: (x: any) => {
@@ -84,16 +98,18 @@ export class ViewStudentComponent {
   }
 
   onUpdate(): void {
-    this.studentServe.updateStudent(this.student.id, this.student).subscribe({
-      next: (x: any) => {
-        this.snackBar.open('Student updated Successfully', undefined, {
-          duration: 2000
-        });
-      },
-      error: (d) => {
-        console.log(d)
-      }
-    })
+    if (this.studentDetailsForm?.form.valid) {
+      this.studentServe.updateStudent(this.student.id, this.student).subscribe({
+        next: (x: any) => {
+          this.snackBar.open('Student updated Successfully', undefined, {
+            duration: 2000
+          });
+        },
+        error: (d) => {
+          console.log(d)
+        }
+      })
+    }
   }
 
   onDelete(): void {
@@ -112,5 +128,26 @@ export class ViewStudentComponent {
       }
     })
   }
+
+  onAdd(): void {
+    if (this.studentDetailsForm?.form.valid) {
+      // Submit form date to api
+      this.studentServe.addStudent(this.student).subscribe({
+        next: (x: any) => {
+          this.snackBar.open('Student added successfully', undefined, {
+            duration: 2000
+          });
+  
+          setTimeout(() => {
+            this.router.navigateByUrl(`students`);
+          }, 2000);
+        },
+        error: (d) => {
+          console.log(d)
+        }
+      })
+    }
+  }
+
 
 }
