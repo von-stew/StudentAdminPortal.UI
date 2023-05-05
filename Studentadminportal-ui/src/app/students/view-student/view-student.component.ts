@@ -141,7 +141,7 @@ export class ViewStudentComponent {
           });
   
           setTimeout(() => {
-            this.router.navigateByUrl(`students`);
+            this.router.navigateByUrl(`students/${x.id}`);
           }, 2000);
         },
         error: (d) => {
