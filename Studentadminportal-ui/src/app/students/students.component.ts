@@ -19,7 +19,8 @@ export class StudentsComponent {
     'dateOfBirth',
     'email',
     'mobile',
-    'gender'
+    'gender',
+    'edit'
     ];
 
 
