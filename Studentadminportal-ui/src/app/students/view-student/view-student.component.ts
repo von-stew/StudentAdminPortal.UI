@@ -69,16 +69,18 @@ export class ViewStudentComponent {
         // -> new Student Functionality
         this.isNewStudent = true;
         this.header = 'Add New Student';
-        //this.setImage();
+        this.setImage();
       } else {
       //Otherwise it will be existing
       this.header = 'Edit Student';
       this.studentServe.getStudent(this.studentID).subscribe({
         next: (x: any) => {
           this.student = x;
+          this.setImage();
           console.log(this.student);
         },
         error: (d) => {
+          this.setImage();
           console.log(d)
         }
       })
@@ -146,6 +148,31 @@ export class ViewStudentComponent {
           console.log(d)
         }
       })
+    }
+  }
+
+  uploadImage(event: any): void {
+    if (this.studentID) {
+      const file: File = event.target.files[0];
+      this.studentServe.uploadImage(this.student.id, file).subscribe({
+        next: (x: any) => {
+          this.student.profileImageUrl = x;
+          this.setImage();
+
+          this.snackBar.open('Profile Image Updated', undefined, {
+            duration: 2000
+          });
+        }
+      })
+    }
+  }
+
+  private setImage(): void {
+    if (this.student.profileImageUrl) {
+      this.displayProfileImageUrl = this.studentServe.getImagePath(this.student.profileImageUrl);
+    } else {
+      // Display a default
+      this.displayProfileImageUrl = '/assets/223203.png';
     }
   }
 
