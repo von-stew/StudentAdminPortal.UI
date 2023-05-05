@@ -4,6 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Student } from 'src/app/models/api-models/student.model';
 import { Gender } from 'src/app/models/ui-models/gender.model';
 import { NgForm } from '@angular/forms';
+import { GenderService } from 'src/app/services/gender.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-view-student',
@@ -42,13 +44,18 @@ export class ViewStudentComponent {
   @ViewChild('studentDetailsForm') studentDetailsForm?: NgForm;
 
   constructor(private readonly studentServe: StudentService,
-    private readonly route: ActivatedRoute){
+    private readonly route: ActivatedRoute,
+    private readonly genderService: GenderService,
+    private snackBar: MatSnackBar){
 
   }
 
   ngOnInit(): void{
     this.route.paramMap.subscribe({
-      next: (x: any) => {this.studentID = x.get('id')}
+      next: (x: any) => {this.studentID = x.get('id')},
+      error: (d) => {
+        console.log(d)
+      }
     })
 
     if(this.studentID) {
@@ -56,11 +63,36 @@ export class ViewStudentComponent {
         next: (x: any) => {
           this.student = x;
           console.log(this.student);
+        },
+        error: (d) => {
+          console.log(d)
         }
       })
 
+      this.genderService.getGenderList().subscribe({
+        next: (x: any) => {
+          this.genderList = x;
+          console.log(this.genderList);
+        },
+        error: (d) => {
+          console.log(d)
+        }
+      })
 
     }    
+  }
+
+  onUpdate(): void {
+    this.studentServe.updateStudent(this.student.id, this.student).subscribe({
+      next: (x: any) => {
+        this.snackBar.open('Student updated Successfully', undefined, {
+          duration: 2000
+        });
+      },
+      error: (d) => {
+        console.log(d)
+      }
+    })
   }
 
 }
