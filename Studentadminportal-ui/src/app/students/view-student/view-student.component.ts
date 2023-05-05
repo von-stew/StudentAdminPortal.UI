@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { StudentService } from '../student.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Student } from 'src/app/models/api-models/student.model';
 import { Gender } from 'src/app/models/ui-models/gender.model';
 import { NgForm } from '@angular/forms';
@@ -46,7 +46,8 @@ export class ViewStudentComponent {
   constructor(private readonly studentServe: StudentService,
     private readonly route: ActivatedRoute,
     private readonly genderService: GenderService,
-    private snackBar: MatSnackBar){
+    private snackBar: MatSnackBar,
+    private router: Router){
 
   }
 
@@ -88,6 +89,23 @@ export class ViewStudentComponent {
         this.snackBar.open('Student updated Successfully', undefined, {
           duration: 2000
         });
+      },
+      error: (d) => {
+        console.log(d)
+      }
+    })
+  }
+
+  onDelete(): void {
+    this.studentServe.deleteStudent(this.student.id).subscribe({
+      next: (x: any) => {
+        this.snackBar.open('Student deleted successfully', undefined, {
+          duration: 2000
+        });
+
+        setTimeout(() => {
+          this.router.navigateByUrl('students');
+        }, 2000);
       },
       error: (d) => {
         console.log(d)
